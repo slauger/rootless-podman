@@ -1,0 +1,27 @@
+- hosts: debian
+  tasks:
+    - name: install podman package
+      package:
+        name:
+          - podman
+    - name: install additional dependencies
+      package:
+        name:
+          - uidmap
+          - slirp4netns
+          - fuse-overlayfs
+          - crun
+    - name: configure 
+      copy:
+        content: |
+          kernel.unprivileged_userns_clone=1
+        dest: /etc/sysctl.d/00-local-userns.conf
+        mode: 0644
+    - name: restart procps
+      shell: systemctl restart procps
+    - name: configure default runtime for podman
+      copy:
+        src: containers.conf
+        dest: /etc/containers/containers.conf
+        mode: 0644
+ 
